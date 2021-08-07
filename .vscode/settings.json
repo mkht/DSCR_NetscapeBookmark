@@ -1,0 +1,11 @@
+{
+    "coverage-gutters.showGutterCoverage": false,
+    "coverage-gutters.showLineCoverage": true,
+    "editor.trimAutoWhitespace": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.formatOnSave": true,
+    "files.insertFinalNewline": true,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    }
+}

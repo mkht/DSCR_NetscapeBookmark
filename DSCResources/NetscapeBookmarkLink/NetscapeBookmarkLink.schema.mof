@@ -1,0 +1,14 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("NetscapeBookmarkLink")]
+class NetscapeBookmarkLink : OMI_BaseResource
+{
+    [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Key] String Path;
+    [key] String Title;
+    [key] String Folder;
+    [Required] String Url;
+    [Write] String IconData;
+    [Write] String IconUrl;
+    [Write] DateTime AddDate;
+    [Write] DateTime ModifiedDate;
+};
