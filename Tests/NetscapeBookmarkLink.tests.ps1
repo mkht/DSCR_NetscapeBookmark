@@ -1,4 +1,4 @@
-﻿#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.4' }
+﻿#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.2.0' }
 
 BeforeAll {
     Import-Module (Join-Path $PSScriptRoot 'TestHelper.psm1') -Force
@@ -46,7 +46,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It 'The bookmark file is invalid' {
             $DscProps = @{
-                Path   = 'TestDrive:\invalid.html'
+                Path   = Join-Path $TestDrive 'invalid.html'
                 Folder = 'TestFolder'
                 Title  = 'TestTitle'
                 Url    = 'http://example.com/'
@@ -57,7 +57,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It 'The bookmark exist' {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark.html'
+                Path   = Join-Path $TestDrive 'bookmark.html'
                 Folder = 'お気に入りバー'
                 Title  = 'Google'
                 Url    = 'https://www.google.co.jp/'
@@ -67,7 +67,7 @@ Describe 'NetscapeBookmarkLink' {
             $GetResource.Folder | Should -Be 'お気に入りバー'
             $GetResource.Title | Should -Be 'Google'
             $GetResource.Url | Should -Be 'https://www.google.co.jp/'
-            $GetResource.AddDate | Should -Be ([datetime]::new(2021, 8, 6, 15, 23, 31, [DateTimeKind]::Utc))
+            $GetResource.AddDate.ToUniversalTime() | Should -Be ([datetime]::new(2021, 8, 6, 15, 23, 31, [DateTimeKind]::Utc))
             $GetResource.IconData | Should -Match 'data:image/png;base64'
         }
 
@@ -75,7 +75,7 @@ Describe 'NetscapeBookmarkLink' {
 
     Context 'Test-TargetResource' {
 
-        It '[<Ensure>] The bookmark file does not exist' -ForEach @(
+        It '[<Ensure>] The bookmark file does not exist' -Foreach @(
             @{ Ensure = 'Present'; Expected = $false }
             @{ Ensure = 'Absent'; Expected = $true }
         ) {
@@ -90,12 +90,12 @@ Describe 'NetscapeBookmarkLink' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Ensure>] The bookmark file is invalid' -ForEach @(
+        It '[<Ensure>] The bookmark file is invalid' -Foreach @(
             @{ Ensure = 'Present'; Expected = $false }
             @{ Ensure = 'Absent'; Expected = $true }
         ) {
             $DscProps = @{
-                Path   = 'TestDrive:\invalid.html'
+                Path   = Join-Path $TestDrive 'invalid.html'
                 Folder = 'TestFolder'
                 Title  = 'TestTitle'
                 Url    = 'http://example.com/'
@@ -105,12 +105,12 @@ Describe 'NetscapeBookmarkLink' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Correctness>] Test for Url' -ForEach @(
+        It '[<Correctness>] Test for Url' -Foreach @(
             @{ Correctness = 'Correct'; Url = 'https://www.google.co.jp/' ; Expected = $true }
             @{ Correctness = 'InCorrect'; Url = 'https://www.google.com/' ; Expected = $false }
         ) {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark.html'
+                Path   = Join-Path $TestDrive 'bookmark.html'
                 Folder = 'お気に入りバー'
                 Title  = 'Google'
                 Url    = $Url
@@ -119,12 +119,12 @@ Describe 'NetscapeBookmarkLink' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Correctness>] Test for ADD_DATE' -ForEach @(
+        It '[<Correctness>] Test for ADD_DATE' -Foreach @(
             @{ Correctness = 'Correct'; Date = ([datetime]::new(2021, 8, 6, 15, 23, 31, [DateTimeKind]::Utc)) ; Expected = $true }
             @{ Correctness = 'InCorrect'; Date = ([datetime]::now) ; Expected = $false }
         ) {
             $DscProps = @{
-                Path    = 'TestDrive:\bookmark.html'
+                Path    = Join-Path $TestDrive 'bookmark.html'
                 Folder  = 'お気に入りバー'
                 Title   = 'Google'
                 Url     = 'https://www.google.co.jp/'
@@ -134,12 +134,12 @@ Describe 'NetscapeBookmarkLink' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Correctness>] Test for IconData' -ForEach @(
+        It '[<Correctness>] Test for IconData' -Foreach @(
             @{ Correctness = 'Correct'; IconData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABy0lEQVQ4jY2TP2hTURjFf09zM1UbcGmID9xEFEyyCTo1b6uLxuCS1e4Fg4tuIlhczMMti0NwadOho9DNf7wpCCYdDEL7njWgiU87NOBxeGmavryKB+5wv8t3vnPuuRdJaUnPJO3o/7Ez7klbkp4AD5jC9vY2jUaDz70elmVxc2mJarVKAlaRFExTe56n08YoFVu1Wi1JSYCkwXTl3vKyUsao5DjqdDqT/XnbTiIYWJIGwPyhpiAI8H2f4XDIzzCk2WzSarUAGB0cxC0MZxR0u13li8UZCyljEhXMENypVJQyRvliUb7vq+66/yQ4Fdd0KLdcLpPNZmm325OzMAxnc4gryBcKk4klxzmWSN11T7Dw259UPM9TzraVMkY521bddVWuVLToOAq/B/rTeSl9WInWJIXNy/NcX4fMxaTHcoSt2zB3AdIZ+PQI7mqcwu5r6RXS+xUp9OMyj/BrV+qtST860tq52Dv40oJ3t6JJmRuw4IA5CwIsC/a2YG8Drq1H9f4buPpwaEkKgAUA+h58fAzfNqJGxv0Ac5eg8BxyJRiN0zBnvlqSngL3j3kddKH/FkbDiCFzBXKLSbeyiqLv/ELS/snmZ7A/7kn/BXFbL8ajtAhKAAAAAElFTkSuQmCC' ; Expected = $true }
             @{ Correctness = 'InCorrect'; IconData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACMUlEQVQ4jY2TO09UURSFv73PnYfzQlEKAROjIRbaaYE2xtjZj7UWZrSh8geMGq1RY0wMBEi0wcRWQ4Gxwl8gBTExMIBGzQAzwzzuvWdbzIyhYBJWuR9r7XPW3nAUlE35bAGL5gYXmcmAzKD4Ick+iYgdDI/N/r2qQeKGON1cT2bfAm60WitslQp/AoCx+fpNdXJtQ+QJAMVFx4lzypsr4fh8bUqSiWkJUoLBeLt5Hx9VSeoL4FMAoBJf0KHC4zMLe2fjVvRoqzS8DsSFmd1hxJ7hTXyz3sZMNZ2btE5jL3by+v8TxudaE7hoRTPZk75e+y3CB/OyhJM05hcA1yuOJJNT36jPVe4U7lE2DQCIomOoX7NWO4/qiKSzJcJ2yaJOBKiAGJghpiLOVH70vqdLYEGcUQ0mzTxmPvbNmnUbJQCj2wxiPvCdEDH71iPwCiabd4e+evMPxAW/RNQABcQwMzABEcQTpLCwtd1o5ZcBKIvXvlXeBR8tbHlNZYK+h93G7viYxZpOKaLT1ZLsUjalq9T1fDuRrojIUws7qyouBjDEG8RAqLl80jfqy5Wd7HMwoSy+RwDMWZoRZGMnN0MUvjPRliCRmUdcwmk2n7Tm/tIudpspafdFAQKA037/kq77h3Jcbmkhl7cYCD3SaQKs+WbzVeV75mVf9dBVPjXbGE0muCxE59Usg1E151Yr1Z8rTE20e7suB9WPjuLiwCs8cEwmFN8rF4vCdeALAP6wsQ/iHwyf/mrLM8vhAAAAAElFTkSuQmCC' ; Expected = $false }
         ) {
             $DscProps = @{
-                Path     = 'TestDrive:\bookmark.html'
+                Path     = Join-Path $TestDrive 'bookmark.html'
                 Folder   = 'お気に入りバー'
                 Title    = 'Amazon'
                 Url      = 'https://www.amazon.co.jp/'
@@ -155,7 +155,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It '[Absent] The bookmark file does not exist' {
             $DscProps = @{
-                Path   = 'TestDrive:\notexist\missing.html'
+                Path   = Join-Path $TestDrive '\notexist\missing.html'
                 Folder = 'TestFolder'
                 Title  = 'TestTitle'
                 Url    = 'https://example.com/'
@@ -170,7 +170,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It '[Present] The bookmark file does not exist' {
             $DscProps = @{
-                Path   = 'TestDrive:\missing.html'
+                Path   = Join-Path $TestDrive 'missing.html'
                 Folder = 'TestFolder'
                 Title  = 'TestTitle'
                 Url    = 'https://example.com/'
@@ -201,7 +201,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It '[Absent] Remove Link' {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark2.html'
+                Path   = Join-Path $TestDrive 'bookmark2.html'
                 Folder = 'お気に入りバー'
                 Title  = 'Twitter'
                 Url    = 'https://twitter.com/'
@@ -231,7 +231,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It '[Present] Add Link and folder' {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark2.html'
+                Path   = Join-Path $TestDrive 'bookmark2.html'
                 Folder = 'NewFolder'
                 Title  = 'TestTitle'
                 Url    = 'https://example.com/'
@@ -266,7 +266,7 @@ Describe 'NetscapeBookmarkLink' {
 
         It '[Present] Add Link to folder' {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark2.html'
+                Path   = Join-Path $TestDrive 'bookmark2.html'
                 Folder = 'お気に入りバー'
                 Title  = 'TestTitle'
                 Url    = 'https://example.com/'
@@ -299,7 +299,7 @@ Describe 'NetscapeBookmarkLink' {
         It '[Present] Change Link properties' {
             $date = ([datetime]::new(2039, 1, 1, 0, 0, 0, [DateTimeKind]::Utc))
             $DscProps = @{
-                Path         = 'TestDrive:\bookmark2.html'
+                Path         = Join-Path $TestDrive 'bookmark2.html'
                 Folder       = 'お気に入りバー'
                 Title        = 'Twitter'
                 Url          = 'https://example.com/'

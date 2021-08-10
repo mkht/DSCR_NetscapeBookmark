@@ -1,4 +1,4 @@
-﻿#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0.4' }
+﻿#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.2.0' }
 
 BeforeAll {
     Import-Module (Join-Path $PSScriptRoot 'TestHelper.psm1') -Force
@@ -44,7 +44,7 @@ Describe 'NetscapeBookmarkFolder' {
 
         It 'The bookmark file is invalid' {
             $DscProps = @{
-                Path  = 'TestDrive:\invalid.html'
+                Path  = (Join-Path $TestDrive 'invalid.html')
                 Title = 'TestTitle'
             }
             $GetResource = Invoke-DscResource @InvokeDscGet -Property $DscProps
@@ -53,14 +53,14 @@ Describe 'NetscapeBookmarkFolder' {
 
         It 'The bookmark exist' {
             $DscProps = @{
-                Path  = 'TestDrive:\bookmark.html'
+                Path  = (Join-Path $TestDrive 'bookmark.html')
                 Title = 'お気に入りバー'
             }
             $GetResource = Invoke-DscResource @InvokeDscGet -Property $DscProps
             $GetResource.Ensure | Should -Be 'Present'
             $GetResource.Title | Should -Be 'お気に入りバー'
-            $GetResource.AddDate | Should -Be ([datetime]::new(2021, 8, 6, 15, 22, 59, [DateTimeKind]::Utc))
-            $GetResource.ModifiedDate | Should -Be ([datetime]::new(2021, 8, 6, 15, 23, 44, [DateTimeKind]::Utc))
+            $GetResource.AddDate.ToUniversalTime() | Should -Be ([datetime]::new(2021, 8, 6, 15, 22, 59, [DateTimeKind]::Utc))
+            $GetResource.ModifiedDate.ToUniversalTime() | Should -Be ([datetime]::new(2021, 8, 6, 15, 23, 44, [DateTimeKind]::Utc))
         }
 
     }
@@ -85,7 +85,7 @@ Describe 'NetscapeBookmarkFolder' {
             @{ Ensure = 'Absent'; Expected = $true }
         ) {
             $DscProps = @{
-                Path   = 'TestDrive:\invalid.html'
+                Path   = (Join-Path $TestDrive 'invalid.html')
                 Title  = 'TestTitle'
                 Ensure = $Ensure
             }
@@ -98,7 +98,7 @@ Describe 'NetscapeBookmarkFolder' {
             @{ Correctness = 'InCorrect'; Date = ([datetime]::now) ; Expected = $false }
         ) {
             $DscProps = @{
-                Path    = 'TestDrive:\bookmark.html'
+                Path    = (Join-Path $TestDrive 'bookmark.html')
                 Title   = 'お気に入りバー'
                 AddDate = $Date
             }
@@ -111,7 +111,7 @@ Describe 'NetscapeBookmarkFolder' {
             @{ Correctness = 'InCorrect'; Date = ([datetime]::now) ; Expected = $false }
         ) {
             $DscProps = @{
-                Path         = 'TestDrive:\bookmark.html'
+                Path         = (Join-Path $TestDrive 'bookmark.html')
                 Title        = 'お気に入りバー'
                 ModifiedDate = $Date
             }
@@ -125,10 +125,14 @@ Describe 'NetscapeBookmarkFolder' {
             @{ Correctness = 'InCorrect2'; Attributes = @{SOMEONE_ELSE = 'John' } ; Expected = $false }
         ) {
             $DscProps = @{
-                Path       = 'TestDrive:\bookmark.html'
+                Path       = (Join-Path $TestDrive 'bookmark.html')
                 Title      = 'お気に入りバー'
-                Attributes = ConvertTo-CimInstance -Hashtable $Attributes
+                Attributes = $Attributes
             }
+            if ($PSVersionTable.PSVersion.Major -ge 7) {
+                $DscProps.Attributes = ConvertTo-CimInstance -Hashtable $Attributes
+            }
+
             $TestResource = Invoke-DscResource @InvokeDscTest -Property $DscProps
             $TestResource.InDesiredState | Should -Be $Expected
         }
@@ -139,7 +143,7 @@ Describe 'NetscapeBookmarkFolder' {
 
         It '[Absent] The bookmark file does not exist' {
             $DscProps = @{
-                Path   = 'TestDrive:\notexist\missing.html'
+                Path   = Join-Path $TestDrive '\notexist\missing.html'
                 Title  = 'TestTitle'
                 Ensure = 'Absent'
             }
@@ -152,7 +156,7 @@ Describe 'NetscapeBookmarkFolder' {
 
         It '[Present] The bookmark file does not exist' {
             $DscProps = @{
-                Path   = 'TestDrive:\missing.html'
+                Path   = Join-Path $TestDrive 'missing.html'
                 Title  = 'TestTitle'
                 Ensure = 'Present'
             }
@@ -180,7 +184,7 @@ Describe 'NetscapeBookmarkFolder' {
 
         It '[Absent] Remove folder' {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark.html'
+                Path   = (Join-Path $TestDrive 'bookmark.html')
                 Title  = 'お気に入りバー'
                 Ensure = 'Absent'
             }
@@ -205,7 +209,7 @@ Describe 'NetscapeBookmarkFolder' {
 
         It '[Present] Add folder' {
             $DscProps = @{
-                Path   = 'TestDrive:\bookmark2.html'
+                Path   = Join-Path $TestDrive 'bookmark2.html'
                 Title  = 'NewFolder'
                 Ensure = 'Present'
             }
@@ -239,13 +243,17 @@ Describe 'NetscapeBookmarkFolder' {
         It '[Present] Change folder properties' {
             $date = ([datetime]::new(2039, 1, 1, 0, 0, 0, [DateTimeKind]::Utc))
             $DscProps = @{
-                Path         = 'TestDrive:\bookmark2.html'
+                Path         = Join-Path $TestDrive 'bookmark2.html'
                 Title        = 'お気に入りバー'
                 AddDate      = $date
                 ModifiedDate = $date
-                Attributes   = ConvertTo-CimInstance -Hashtable @{PERSONAL_TOOLBAR_FOLDER = 'test' }
+                Attributes   = @{PERSONAL_TOOLBAR_FOLDER = 'test' }
                 Ensure       = 'Present'
             }
+            if ($PSVersionTable.PSVersion.Major -ge 7) {
+                $DscProps.Attributes = ConvertTo-CimInstance -Hashtable $DscProps.Attributes
+            }
+
             Invoke-DscResource @InvokeDscSet -Property $DscProps
             $DscProps.Path | Should -Exist
             Get-Content $DscProps.Path -Raw -Encoding utf8 | Should -BeExactly (@'
