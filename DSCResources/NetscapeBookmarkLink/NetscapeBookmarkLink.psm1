@@ -66,7 +66,7 @@ function Get-TargetResource {
     }
 
     # Test if the folder exists in the bookmark file
-    $TargetFolder = $Bookmark.AllFolders | ? { $_.Title -eq $Folder } | select -first 1
+    $TargetFolder = $Bookmark.AllFolders | ? { $_.Title -eq $Folder } | select -First 1
     if ($null -eq $TargetFolder) {
         # Folder does not exist
         $GetObject.Ensure = [Ensure]::Absent
@@ -77,7 +77,7 @@ function Get-TargetResource {
     }
 
     # Test if the link exists in the folder
-    $TargetItem = $TargetFolder.AllLinks | ? { $_.Title -eq $Title } | select -first 1
+    $TargetItem = $TargetFolder.AllLinks | ? { $_.Title -eq $Title } | select -First 1
     if ($null -eq $TargetItem) {
         # Link does not exist
         $GetObject.Ensure = [Ensure]::Absent
@@ -181,7 +181,7 @@ function Set-TargetResource {
             $Writer = [BookmarksManager.NetscapeBookmarksWriter]::new($Bookmark)
             $ParentFolder = Split-Path -Path $Path -Parent
             if (-not (Test-Path -LiteralPath $ParentFolder -PathType Container)) {
-                $null = New-item -Itemtype Directory -Path $ParentFolder -Force
+                $null = New-Item -ItemType Directory -Path $ParentFolder -Force
             }
             $Writer.ToString() | Out-File -FilePath $Path -Encoding utf8 -Force -NoNewline
             Write-Verbose -Message 'The bookmark file has been saved.'
@@ -254,7 +254,7 @@ function Set-TargetResource {
         $Writer = [BookmarksManager.NetscapeBookmarksWriter]::new($NewBookmarkParent)
         $ParentFolder = Split-Path -Path $Path -Parent
         if (-not (Test-Path -LiteralPath $ParentFolder -PathType Container)) {
-            $null = New-item -Itemtype Directory -Path $ParentFolder -Force
+            $null = New-Item -ItemType Directory -Path $ParentFolder -Force
         }
         $Writer.ToString() | Out-File -FilePath $Path -Encoding utf8 -Force -NoNewline
         Write-Verbose -Message 'The bookmark file has been saved.'
@@ -337,7 +337,7 @@ function Test-TargetResource {
     }
 
     if ($CurrentState.Ensure -ne $Ensure) {
-        Write-verbose -Message ('The target resource is not in the expected state. Expected {0}, but got {1}' -f $Ensure, $CurrentState.Ensure)
+        Write-Verbose -Message ('The target resource is not in the expected state. Expected {0}, but got {1}' -f $Ensure, $CurrentState.Ensure)
         return $false
     }
 

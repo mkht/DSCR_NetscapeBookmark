@@ -56,7 +56,7 @@ function Get-TargetResource {
     }
 
     # Test if the folder exists in the bookmark file
-    $Folder = $Bookmark.AllFolders | ? { $_.Title -eq $Title } | select -first 1
+    $Folder = $Bookmark.AllFolders | ? { $_.Title -eq $Title } | select -First 1
     if ($null -eq $Folder) {
         # Folder does not exist
         $GetObject.Ensure = [Ensure]::Absent
@@ -137,7 +137,7 @@ function Set-TargetResource {
             $Writer = [BookmarksManager.NetscapeBookmarksWriter]::new($NewBookmarkParent)
             $ParentFolder = Split-Path -Path $Path -Parent
             if (-not (Test-Path -LiteralPath $ParentFolder -PathType Container)) {
-                $null = New-item -Itemtype Directory -Path $ParentFolder -Force
+                $null = New-Item -ItemType Directory -Path $ParentFolder -Force
             }
             $Writer.ToString() | Out-File -FilePath $Path -Encoding utf8 -Force -NoNewline
             Write-Verbose -Message 'The bookmark file has been saved.'
@@ -214,7 +214,7 @@ function Set-TargetResource {
         $Writer = [BookmarksManager.NetscapeBookmarksWriter]::new($NewBookmarkParent)
         $ParentFolder = Split-Path -Path $Path -Parent
         if (-not (Test-Path -LiteralPath $ParentFolder -PathType Container)) {
-            $null = New-item -Itemtype Directory -Path $ParentFolder -Force
+            $null = New-Item -ItemType Directory -Path $ParentFolder -Force
         }
         $Writer.ToString() | Out-File -FilePath $Path -Encoding utf8 -Force -NoNewline
         Write-Verbose -Message 'The bookmark file has been saved.'

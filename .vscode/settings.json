@@ -1,11 +1,12 @@
 {
-    "coverage-gutters.showGutterCoverage": false,
-    "coverage-gutters.showLineCoverage": true,
     "editor.trimAutoWhitespace": true,
     "files.trimTrailingWhitespace": true,
     "editor.formatOnSave": true,
     "files.insertFinalNewline": true,
     "[markdown]": {
         "files.trimTrailingWhitespace": false
-    }
+    },
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "powershell.codeFormatting.useConstantStrings": true,
+    "powershell.pester.useLegacyCodeLens": false
 }
