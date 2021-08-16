@@ -27,11 +27,19 @@
     Copyright            = '(c) 2021 mkht All rights reserved.'
 
     # Description of the functionality provided by this module
-    # Description = ''
+    Description          = 'PowerShell DSC Resource to create and modify Netscape format bookmark file.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion    = '5.1'
 
     # Name of the Windows PowerShell host required by this module
     # PowerShellHostName = ''
+
+    PrivateData          = @{
+        PSData = @{
+            Tags       = @('DSC', 'Netscape', 'Bookmark')
+            LicenseUri = 'https://github.com/mkht/DSCR_NetscapeBookmark/blob/main/LICENSE'
+            ProjectUri = 'https://github.com/mkht/DSCR_NetscapeBookmark'
+        }
+    }
 }
