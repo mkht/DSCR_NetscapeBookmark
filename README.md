@@ -64,3 +64,13 @@ Configuration Example1
 ## ChangeLog
 ### 1.0.0
  + First public release
+
+
+----
+## Libraries
+This software uses below libraries.
+
++ [Dissimilis/BookmarksManager](https://github.com/Dissimilis/BookmarksManager)
+    - Copyright (c) 2014 Marius Vitkevičius
+      Licensed under the **MIT License**.  
+      https://github.com/Dissimilis/BookmarksManager/blob/master/LICENSE
