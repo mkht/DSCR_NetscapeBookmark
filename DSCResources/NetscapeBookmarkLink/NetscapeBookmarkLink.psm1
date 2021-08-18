@@ -6,7 +6,7 @@
 # Import helper functions
 $UtilPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Utils'
 # Import-Module (Join-Path $UtilPath 'ConvertTo-HashTable.psm1')
-Import-Module (Join-Path $UtilPath 'Validate-DateTime.psm1')
+Import-Module (Join-Path $UtilPath 'Validate-DateTime.psm1') -DisableNameChecking
 
 # Import parser libraries
 $LibPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Libs'
@@ -139,12 +139,12 @@ function Set-TargetResource {
 
         # The ADD_DATE of the link
         [Parameter()]
-        [System.DateTime]
+        [Nullable[System.DateTime]]
         $AddDate,
 
         # The LAST_MODIFIED of the link
         [Parameter()]
-        [System.DateTime]
+        [Nullable[System.DateTime]]
         $ModifiedDate,
 
         # The Data URI of the icon
@@ -298,12 +298,12 @@ function Test-TargetResource {
 
         # The ADD_DATE of the link
         [Parameter()]
-        [System.DateTime]
+        [Nullable[System.DateTime]]
         $AddDate,
 
         # The LAST_MODIFIED of the link
         [Parameter()]
-        [System.DateTime]
+        [Nullable[System.DateTime]]
         $ModifiedDate,
 
         # The Data URI of the icon

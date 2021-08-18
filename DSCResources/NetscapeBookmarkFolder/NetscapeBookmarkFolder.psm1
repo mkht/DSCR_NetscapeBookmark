@@ -5,8 +5,8 @@
 
 # Import helper functions
 $UtilPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Utils'
-Import-Module (Join-Path $UtilPath 'ConvertTo-HashTable.psm1')
-Import-Module (Join-Path $UtilPath 'Validate-DateTime.psm1')
+Import-Module (Join-Path $UtilPath 'ConvertTo-HashTable.psm1') -DisableNameChecking
+Import-Module (Join-Path $UtilPath 'Validate-DateTime.psm1') -DisableNameChecking
 
 # Import parser libraries
 $LibPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Libs'
