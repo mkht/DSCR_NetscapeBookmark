@@ -1,7 +1,7 @@
 DSCR_NetscapeBookmark
 ====
 
-DSC Resource to create Netscape format bookmark file.
+PowerShell DSC Resource to create Netscape format bookmark file.
 
 ----
 ## Installation
@@ -62,6 +62,10 @@ Configuration Example1
 
 ----
 ## ChangeLog
+### 1.1.0
+ + It is no longer possible to specify a date prior to the Unix epoch (`1970-01-01 00:00:00`).
+ + Fixed an issue of unstable operation when the Unix epoch is specified as date properties.
+
 ### 1.0.0
  + First public release
 
@@ -71,6 +75,6 @@ Configuration Example1
 This software uses below libraries.
 
 + [Dissimilis/BookmarksManager](https://github.com/Dissimilis/BookmarksManager)
-    - Copyright (c) 2014 Marius Vitkevičius
+    - Copyright (c) 2014 Marius Vitkevičius  
       Licensed under the **MIT License**.  
       https://github.com/Dissimilis/BookmarksManager/blob/master/LICENSE
