@@ -67,7 +67,7 @@ Describe 'NetscapeBookmarkFolder' {
 
     Context 'Test-TargetResource' {
 
-        It '[<Ensure>] The bookmark file does not exist' -ForEach @(
+        It '[<Ensure>] The bookmark file does not exist' -Foreach @(
             @{ Ensure = 'Present'; Expected = $false }
             @{ Ensure = 'Absent'; Expected = $true }
         ) {
@@ -80,7 +80,7 @@ Describe 'NetscapeBookmarkFolder' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Ensure>] The bookmark file is invalid' -ForEach @(
+        It '[<Ensure>] The bookmark file is invalid' -Foreach @(
             @{ Ensure = 'Present'; Expected = $false }
             @{ Ensure = 'Absent'; Expected = $true }
         ) {
@@ -93,7 +93,7 @@ Describe 'NetscapeBookmarkFolder' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Correctness>] Test for ADD_DATE' -ForEach @(
+        It '[<Correctness>] Test for ADD_DATE' -Foreach @(
             @{ Correctness = 'Correct'; Date = ([datetime]::new(2021, 8, 6, 15, 22, 59, [DateTimeKind]::Utc)) ; Expected = $true }
             @{ Correctness = 'InCorrect'; Date = ([datetime]::now) ; Expected = $false }
         ) {
@@ -106,7 +106,7 @@ Describe 'NetscapeBookmarkFolder' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Correctness>] Test for LAST_MODIFIED' -ForEach @(
+        It '[<Correctness>] Test for LAST_MODIFIED' -Foreach @(
             @{ Correctness = 'Correct'; Date = ([datetime]::new(2021, 8, 6, 15, 23, 44, [DateTimeKind]::Utc)) ; Expected = $true }
             @{ Correctness = 'InCorrect'; Date = ([datetime]::now) ; Expected = $false }
         ) {
@@ -119,7 +119,7 @@ Describe 'NetscapeBookmarkFolder' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
-        It '[<Correctness>] Test for Attributes' -ForEach @(
+        It '[<Correctness>] Test for Attributes' -Foreach @(
             @{ Correctness = 'Correct'; Attributes = @{PERSONAL_TOOLBAR_FOLDER = 'true' } ; Expected = $true }
             @{ Correctness = 'InCorrect1'; Attributes = @{PERSONAL_TOOLBAR_FOLDER = 'false' } ; Expected = $false }
             @{ Correctness = 'InCorrect2'; Attributes = @{SOMEONE_ELSE = 'John' } ; Expected = $false }
@@ -137,6 +137,19 @@ Describe 'NetscapeBookmarkFolder' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
+        It 'DateTime boundary test [<AddDate>]' -Foreach @(
+            @{ AddDate = [datetime]::MinValue; Not = $false }
+            @{ AddDate = [datetime]::MaxValue; Not = $true }
+            @{ AddDate = [datetime]::new(1969, 12, 31, 23, 59, 59, [DateTimeKind]::Utc); Not = $false }
+            @{ AddDate = [datetime]::new(1970, 1, 1, 0, 0, 0, [DateTimeKind]::Utc); Not = $true }
+        ) {
+            $DscProps = @{
+                Path    = (Join-Path $TestDrive 'bookmark.html')
+                Title   = 'お気に入りバー'
+                AddDate = $AddDate
+            }
+            { Invoke-DscResource @InvokeDscTest -Property $DscProps -ErrorAction Stop } | Should -Throw -Not:$Not
+        }
     }
 
     Context 'Set-TargetResource' {
@@ -277,6 +290,18 @@ Describe 'NetscapeBookmarkFolder' {
             $TestResource.InDesiredState | Should -Be $true
         }
 
+        It 'DateTime boundary test [<AddDate>]' -Foreach @(
+            @{ AddDate = [datetime]::MinValue; Not = $false }
+            @{ AddDate = [datetime]::MaxValue; Not = $true }
+            @{ AddDate = [datetime]::new(1969, 12, 31, 23, 59, 59, [DateTimeKind]::Utc); Not = $false }
+            @{ AddDate = [datetime]::new(1970, 1, 1, 0, 0, 0, [DateTimeKind]::Utc); Not = $true }
+        ) {
+            $DscProps = @{
+                Path    = (Join-Path $TestDrive 'bookmark.html')
+                Title   = 'お気に入りバー'
+                AddDate = $AddDate
+            }
+            { Invoke-DscResource @InvokeDscSet -Property $DscProps -ErrorAction Stop } | Should -Throw -Not:$Not
+        }
     }
-
 }

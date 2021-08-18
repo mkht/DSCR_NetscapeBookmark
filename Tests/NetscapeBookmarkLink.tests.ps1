@@ -149,6 +149,21 @@ Describe 'NetscapeBookmarkLink' {
             $TestResource.InDesiredState | Should -Be $Expected
         }
 
+        It 'DateTime boundary test [<AddDate>]' -Foreach @(
+            @{ AddDate = [datetime]::MinValue; Not = $false }
+            @{ AddDate = [datetime]::MaxValue; Not = $true }
+            @{ AddDate = [datetime]::new(1969, 12, 31, 23, 59, 59, [DateTimeKind]::Utc); Not = $false }
+            @{ AddDate = [datetime]::new(1970, 1, 1, 0, 0, 0, [DateTimeKind]::Utc); Not = $true }
+        ) {
+            $DscProps = @{
+                Path    = (Join-Path $TestDrive 'bookmark.html')
+                Folder  = 'お気に入りバー'
+                Title   = 'Amazon'
+                Url     = 'https://www.amazon.co.jp/'
+                AddDate = $AddDate
+            }
+            { Invoke-DscResource @InvokeDscTest -Property $DscProps -ErrorAction Stop } | Should -Throw -Not:$Not
+        }
     }
 
     Context 'Set-TargetResource' {
@@ -331,5 +346,20 @@ Describe 'NetscapeBookmarkLink' {
             $TestResource.InDesiredState | Should -Be $true
         }
 
+        It 'DateTime boundary test [<AddDate>]' -Foreach @(
+            @{ AddDate = [datetime]::MinValue; Not = $false }
+            @{ AddDate = [datetime]::MaxValue; Not = $true }
+            @{ AddDate = [datetime]::new(1969, 12, 31, 23, 59, 59, [DateTimeKind]::Utc); Not = $false }
+            @{ AddDate = [datetime]::new(1970, 1, 1, 0, 0, 0, [DateTimeKind]::Utc); Not = $true }
+        ) {
+            $DscProps = @{
+                Path    = (Join-Path $TestDrive 'bookmark.html')
+                Folder  = 'お気に入りバー'
+                Title   = 'Twitter'
+                Url     = 'https://example.com/'
+                AddDate = $AddDate
+            }
+            { Invoke-DscResource @InvokeDscSet -Property $DscProps -ErrorAction Stop } | Should -Throw -Not:$Not
+        }
     }
 }
