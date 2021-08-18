@@ -5,7 +5,8 @@
 
 # Import helper functions
 $UtilPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Utils'
-Import-Module (Join-Path $UtilPath 'ConvertTo-HashTable.psm1')
+# Import-Module (Join-Path $UtilPath 'ConvertTo-HashTable.psm1')
+Import-Module (Join-Path $UtilPath 'Validate-DateTime.psm1')
 
 # Import parser libraries
 $LibPath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Libs'
@@ -156,6 +157,10 @@ function Set-TargetResource {
         [System.String]
         $IconUrl
     )
+
+    # Validate range of datetime
+    $AddDate = if (Validate-DateTime $AddDate) { $AddDate }else { $null }
+    $ModifiedDate = if (Validate-DateTime $ModifiedDate) { $ModifiedDate }else { $null }
 
     if ($Ensure -eq [Ensure]::Absent) {
         $GetObject = Get-TargetResource -Path $Path -Title $Title -Url $Url -Folder $Folder
@@ -311,6 +316,10 @@ function Test-TargetResource {
         [System.String]
         $IconUrl
     )
+
+    # Validate range of datetime
+    $AddDate = if (Validate-DateTime $AddDate) { $AddDate }else { $null }
+    $ModifiedDate = if (Validate-DateTime $ModifiedDate) { $ModifiedDate }else { $null }
 
     # Get current state
     $CurrentState = Get-TargetResource -Path $Path -Title $Title -Url $Url -Folder $Folder
