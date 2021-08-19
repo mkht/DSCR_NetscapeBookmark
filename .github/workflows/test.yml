@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Add module to global module directory
+        run: New-Item -Path (Join-Path $env:ProgramFiles '\WindowsPowerShell\Modules\DSCR_NetscapeBookmark') -Value $env:GITHUB_WORKSPACE -ItemType SymbolicLink -Force -Verbose
+
       - name: Install Pester
         run: Install-Module Pester -MinimumVersion 5.2.2 -Force -AllowClobber -Scope CurrentUser -SkipPublisherCheck
 
@@ -23,6 +26,7 @@ jobs:
           $PSVersionTable
           Get-ChildItem 'env:' | Format-Table -AutoSize -Wrap
           Get-Module -ListAvailable
+          Get-DscResouce
 
       - name: Invoke Tests
         run: |
@@ -40,6 +44,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Add module to global module directory
+        run: New-Item -Path (Join-Path $env:ProgramFiles '\WindowsPowerShell\Modules\DSCR_NetscapeBookmark') -Value $env:GITHUB_WORKSPACE -ItemType SymbolicLink -Force -Verbose
+
       - name: Install Pester
         run: Install-Module Pester -MinimumVersion 5.2.2 -Force -AllowClobber -Scope CurrentUser -SkipPublisherCheck
 
@@ -51,6 +58,7 @@ jobs:
           $PSVersionTable
           Get-ChildItem 'env:' | Format-Table -AutoSize -Wrap
           Get-Module -ListAvailable
+          Get-DscResouce
 
       - name: Invoke Tests
         run: |
