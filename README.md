@@ -1,6 +1,8 @@
 DSCR_NetscapeBookmark
 ====
 
+[![DSCR_NetscapeBookmark_Test](https://github.com/mkht/DSCR_NetscapeBookmark/actions/workflows/test.yml/badge.svg)](https://github.com/mkht/DSCR_NetscapeBookmark/actions/workflows/test.yml)
+
 PowerShell DSC Resource to create Netscape format bookmark file.
 
 ----
