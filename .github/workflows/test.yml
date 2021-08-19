@@ -26,7 +26,7 @@ jobs:
           $PSVersionTable
           Get-ChildItem 'env:' | Format-Table -AutoSize -Wrap
           Get-Module -ListAvailable
-          Get-DscResouce
+          Get-DscResource
 
       - name: Invoke Tests
         run: |
@@ -58,7 +58,7 @@ jobs:
           $PSVersionTable
           Get-ChildItem 'env:' | Format-Table -AutoSize -Wrap
           Get-Module -ListAvailable
-          Get-DscResouce
+          Get-DscResource
 
       - name: Invoke Tests
         run: |
