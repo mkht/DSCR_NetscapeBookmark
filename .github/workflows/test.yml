@@ -1,0 +1,60 @@
+name: DSCR_NetscapeBookmark_Test
+
+on: [push]
+
+jobs:
+  Tests_PowerShell_5:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Pester
+        run: Install-Module Pester -MinimumVersion 5.2.2 -Force -AllowClobber -Scope CurrentUser -SkipPublisherCheck
+
+      - name: Configure WinRM
+        run: winrm quickconfig -quiet
+
+      - name: Collect environment
+        run: |
+          $PSVersionTable
+          Get-ChildItem 'env:' | Format-Table -AutoSize -Wrap
+          Get-Module -ListAvailable
+
+      - name: Invoke Tests
+        run: |
+          $PesterConfig = New-PesterConfiguration
+          $PesterConfig.Run.Exit = $true
+          $PesterConfig.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $PesterConfig
+
+  Tests_PowerShell_7:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Pester
+        run: Install-Module Pester -MinimumVersion 5.2.2 -Force -AllowClobber -Scope CurrentUser -SkipPublisherCheck
+
+      - name: Enable experimental feature
+        run: Enable-ExperimentalFeature PSDesiredStateConfiguration.InvokeDscResource
+
+      - name: Collect environment
+        run: |
+          $PSVersionTable
+          Get-ChildItem 'env:' | Format-Table -AutoSize -Wrap
+          Get-Module -ListAvailable
+
+      - name: Invoke Tests
+        run: |
+          $PesterConfig = New-PesterConfiguration
+          $PesterConfig.Run.Exit = $true
+          $PesterConfig.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $PesterConfig
