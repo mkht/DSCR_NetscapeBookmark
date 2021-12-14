@@ -50,6 +50,9 @@ jobs:
       - name: Install Pester
         run: Install-Module Pester -MinimumVersion 5.2.2 -Force -AllowClobber -Scope CurrentUser -SkipPublisherCheck
 
+      - name: Install PSDesiredStateConfiguration
+        run: Install-Module PSDesiredStateConfiguration -MaximumVersion 2.99 -Force -AllowClobber -SkipPublisherCheck
+
       - name: Enable experimental feature
         run: Enable-ExperimentalFeature PSDesiredStateConfiguration.InvokeDscResource
 
